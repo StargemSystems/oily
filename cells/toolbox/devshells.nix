@@ -4,9 +4,10 @@
 }: let
   inherit (inputs) nixpkgs;
   inherit (inputs.std) std;
+  inherit (inputs.std.lib) dev;
   l = nixpkgs.lib // builtins;
 in
-  l.mapAttrs (_: std.lib.dev.mkShell) {
+  l.mapAttrs (_: dev.mkShell) {
     default = {...}: {
       name = "Grease DevOps Shell";
       nixago = [
@@ -16,7 +17,7 @@ in
         std.nixago.adrgen
         # modified from the local Cell
         cell.nixago.treefmt
-        cell.nixago.editorconfig
+        #cell.nixago.editorconfig
         cell.nixago.mdbook
       ];
       commands = [
