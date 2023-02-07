@@ -7,7 +7,7 @@
 in {
   grease = nixpkgs.mkDerivation {
     pname = "grease";
-    version = "proto-v1";
+    version = "0.1.0";
     src = ./library.oil;
     buildInputs = with nixpkgs; [
       inputs.cells.oil-shell.packages.oil
