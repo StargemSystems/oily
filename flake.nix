@@ -14,14 +14,11 @@
       cellsFrom = ./cells;
       cellBlocks = with std.blockTypes; [
         (installables "packages")
-        (devshells "devshells")
         (functions "profiles")
         (functions "modules")
-        (nixago "nixago")
       ];
     }
     {
-      devShells = std.harvest inputs.self ["toolbox" "devshells"];
       packages = std.harvest inputs.self [
         ["oil-shell" "packages"]
         ["grease" "packages"]
