@@ -1,0 +1,83 @@
+#! /usr/bin/env oil
+
+module grease.oil || return 0
+export PATH="@runtimeInputs@:$PATH"
+if ! test -v True { const True, False, None = true, false, null }
+
+#|
+
+proc paramize(:result, @params) {
+  ### override and set default options
+  jo @params | json read :parsed
+  setref result = parsed
+}
+
+proc nsidgen(seed=null, base='@oid') {
+  ### generate namespaced uuid
+  if (not seed) { read --line :seed }
+  uuidgen --sha1 --namespace $base --name $seed
+}
+
+proc gpgfprt(iden=$USER) {
+  ### return any matching gnupg keyids
+  try gpg --list-options show-only-fpr-mbox \
+    --list-keys $iden 2>/dev/null || return 1
+}
+
+proc round-bytes(number, asFloat=false) {
+  ### simplify values of memory units
+  var pattr = '%.2f' if (asFloat) else '%0.f'
+  numfmt --format=$pattr --round=nearest \
+    --from=iec --to=iec $number
+}
+
+proc base20(number=null) {
+  ### convert between decimal and base20
+  const BASE20_CHARS = %( b c d f g h j k l m n p q r s t v w x z )
+  if (not number) { read --line :number }
+  if (number ~ / alpha /) { 
+    setvar number = $(echo $number | tr '[:upper:]' '[:lower:]' |\
+      tr 'bcdfghjklmnpqrstvwxz' '0123456789abcdefghijk')
+    echo $((20#$number)) 
+  } elif (number ~ / digit /) { 
+    var result = []
+    var chrset = @( echo "obase=20;${number}" | bc | tr -d '\\\n' )
+    for i in @chrset { append :result ${BASE20_CHARS[$((10#$i))]} }
+    write --sep '' @result
+  } 
+}
+
+proc base36(number=null) {
+  ### convert between decimal and base36
+  const BASE36_CHARS = %( {0..9} {a..z} )
+  if (not number) { read --line :number }
+  if (number ~ / alpha /) { echo $((36#$number)) 
+  } elif (number ~ / digit /) { 
+    var result = []
+    var chrset = @( echo "obase=36;${number}" | bc | tr -d '\\\n' )
+    for i in @chrset { append :result ${BASE36_CHARS[$((10#$i))]} }
+    write --sep '' @result
+  } 
+}
+
+proc string-strip(rgx, str=null) {
+  if (not str) { read --line :str }
+  echo $str | rg $rgx -r ''
+}
+
+proc string-squee(chr, str=null) {
+  if (not str) { read --line :str }
+  echo $str | tr -s $chr
+}
+
+proc string-upper(str=null) {
+  if (not str) { read --line :str }
+  echo $str | tr '[:lower:]' '[:upper:]'
+}
+
+proc string-lower(str=null) {
+  if (not str) { read --line :str }
+  echo $str | tr '[:upper:]' '[:lower:]'
+}
+
+#|

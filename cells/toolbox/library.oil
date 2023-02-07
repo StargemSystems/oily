@@ -1,3 +1,0 @@
-#! /usr/bin/env oil
-
-module grease.oil || return 0

@@ -1,5 +1,5 @@
 {
-  description = "A standard nix flake to thicken the oil shell";
+  description = "A standardized flake for an oily nix";
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   inputs.std.inputs.nixpkgs.follows = "nixpkgs";
   inputs.std.url = "github:divnix/std";
@@ -24,12 +24,12 @@
       devShells = std.harvest inputs.self ["toolbox" "devshells"];
       packages = std.harvest inputs.self [
         ["oil-shell" "packages"]
+        ["grease" "packages"]
         # ["faux-bash" "packages"]
-        # ["toolbox" "packages"]
       ];
       nixosModules = std.harvest inputs.self [
         ["oil-shell" "modules"]
-        ["faux-bash" "profiles"]
+        # ["faux-bash" "profiles"]
       ];
     };
 }
