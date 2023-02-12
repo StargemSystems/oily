@@ -1,5 +1,5 @@
 {
-  description = "A standardized flake for an oily nix";
+  description = "An oily standardized nix flake";
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   inputs.std.inputs.nixpkgs.follows = "nixpkgs";
   inputs.std.url = "github:divnix/std";

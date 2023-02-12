@@ -5,9 +5,9 @@
   inherit (inputs) nixpkgs std;
   l = nixpkgs.lib // builtins;
 in {
-  grease = nixpkgs.mkDerivation {
+  grease = nixpkgs.mkDerivation rec {
     pname = "grease";
-    version = "0.1.0";
+    version = "0.3.0";
     src = ./library.oil;
     buildInputs = with nixpkgs; [
       inputs.cells.oil-shell.packages.oil
@@ -19,7 +19,7 @@ in {
     ];
     installPhase = ''
       substitute $src $out \
-        --subst-var-by runtimeInputs "${lib.makeBinPath buildInputs}"
+        --subst-var-by deps "${l.makeBinPath buildInputs}"
     '';
   };
 }

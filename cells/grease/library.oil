@@ -1,10 +1,15 @@
 #! /usr/bin/env oil
+#|
+#| Grease ~ A lib to thicken the oil shell
 
 module grease.oil || return 0
-export PATH="@runtimeInputs@:$PATH"
+export PATH="@deps@:$PATH"
 if ! test -v True { const True, False, None = true, false, null }
 
-#|
+proc ls-procs() { pp proc | cut -f1 }
+proc dt-stamp() { date --utc +%Y%m%d%H%M%S }
+proc wakelock() { systemd-inhibit --what=idle:sleep:handle-lid-switch @ARGV }
+proc uuid2dec(item) { echo $((16#${item//-/})) }
 
 proc paramize(:result, @params) {
   ### override and set default options
@@ -18,10 +23,15 @@ proc nsidgen(seed=null, base='@oid') {
   uuidgen --sha1 --namespace $base --name $seed
 }
 
-proc gpgfprt(iden=$USER) {
+proc gpgfprt(iden=USER) {
   ### return any matching gnupg keyids
   try gpg --list-options show-only-fpr-mbox \
     --list-keys $iden 2>/dev/null || return 1
+}
+
+proc gpgeval(@argv) {
+  var base_cmd = %(gpg --with-colons --command-fd 0 --status-fd 2)
+  eval $join(base_cmd ++ argv, ' ')
 }
 
 proc round-bytes(number, asFloat=false) {
@@ -60,24 +70,63 @@ proc base36(number=null) {
   } 
 }
 
-proc string-strip(rgx, str=null) {
+proc rand-num(upper=100, lower=1) {
+  ### random number between upper and lower bounds
+  shuf -i$lower-$upper -n1
+}
+
+proc rand-itm(@items) {
+  ### random item from a list
+  var num = len(items)
+  var idx = $(rand-num $num) - 1
+  write $[items[idx]]
+}
+
+proc str-mesure(str=null) {
+  ### calc dims of text block
+  if (not str) { read --line :str }
+  echo $str | wc --max-line-length
+  echo $str | wc --lines
+}
+
+proc str-repeat(count, chars) {
+  ### dup string some number of times
+  printf %$[count]s | tr ' ' $chars
+}
+
+proc str-strip(rgx, str=null) {
+  ### remove matches from string
   if (not str) { read --line :str }
   echo $str | rg $rgx -r ''
 }
 
-proc string-squee(chr, str=null) {
+proc str-squee(chr, str=null) {
+  ### squeeze repeating characters into one
   if (not str) { read --line :str }
   echo $str | tr -s $chr
 }
 
-proc string-upper(str=null) {
+proc str-upper(str=null) {
   if (not str) { read --line :str }
   echo $str | tr '[:lower:]' '[:upper:]'
 }
 
-proc string-lower(str=null) {
+proc str-lower(str=null) {
   if (not str) { read --line :str }
   echo $str | tr '[:upper:]' '[:lower:]'
 }
 
+proc read-nix-file(:out, targ, @args) {
+  ### read nix file into variable
+  nix eval --json --file $targ @args 2>/dev/null | json read :res
+  setref out = res
+}
+
+proc read-nix-expr(:out, code, @args) {
+  ### read nix expr into variable
+  nix eval --json --expr $code @args 2>/dev/null | json read :res
+  setref out = res
+}
+
+#|
 #|
