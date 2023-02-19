@@ -3,13 +3,23 @@
 #| Grease ~ A lib to thicken the oil shell
 
 module grease.oil || return 0
-export PATH="@deps@:$PATH"
+
+# allow json values
 if ! test -v True { const True, False, None = true, false, null }
+
+# add substituted deps to path
+setvar deps = '@deps@'
+if (len(deps) > 6) { export PATH="$deps:$PATH" }
+
+# alias doas to sudo if not found
+if ! boolstatus which doas &>/dev/null {
+  proc doas(@argv) { sudo @argv }
+}
 
 proc ls-procs() { pp proc | cut -f1 }
 proc dt-stamp() { date --utc +%Y%m%d%H%M%S }
-proc wakelock() { systemd-inhibit --what=idle:sleep:handle-lid-switch @ARGV }
 proc uuid2dec(item) { echo $((16#${item//-/})) }
+proc wakelock(@argv) { systemd-inhibit --what=idle:sleep:handle-lid-switch @argv }
 
 proc paramize(:result, @params) {
   ### override and set default options
@@ -18,7 +28,7 @@ proc paramize(:result, @params) {
 }
 
 proc nsidgen(seed=null, base='@oid') {
-  ### generate namespaced uuid
+  ### generate namespaced uuids
   if (not seed) { read --line :seed }
   uuidgen --sha1 --namespace $base --name $seed
 }
@@ -30,6 +40,7 @@ proc gpgfprt(iden=USER) {
 }
 
 proc gpgeval(@argv) {
+  ### script-able gnupg interface
   var base_cmd = %(gpg --with-colons --command-fd 0 --status-fd 2)
   eval $join(base_cmd ++ argv, ' ')
 }
