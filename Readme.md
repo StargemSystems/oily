@@ -8,6 +8,4 @@ This is a general purpose library used to thicken up the oil shell.
 
 ## Faux Bash
 
-> not yet implemented
-
 OSH will error out when given most flags meant for Bash. This script is a wrapper that will strip offending flags and pass the remaining over to OSH. It is compiled using `shc`, to allow running as an interpreter.

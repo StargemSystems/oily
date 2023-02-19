@@ -22,7 +22,7 @@
       packages = std.harvest inputs.self [
         ["oil-shell" "packages"]
         ["grease" "packages"]
-        # ["faux-bash" "packages"]
+        ["faux-bash" "packages"]
       ];
       nixosModules = std.harvest inputs.self [
         ["oil-shell" "modules"]

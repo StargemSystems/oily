@@ -5,6 +5,7 @@
   inherit (inputs) nixpkgs std;
   l = nixpkgs.lib // builtins;
 in {
+  default = cell.packages.grease;
   grease = nixpkgs.mkDerivation rec {
     pname = "grease";
     version = "0.3.0";
