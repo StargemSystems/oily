@@ -5,11 +5,11 @@
   inherit (inputs) nixpkgs std;
   l = nixpkgs.lib // builtins;
 in {
-  default = cell.packages.grease;
-  grease = nixpkgs.mkDerivation rec {
+  grease = nixpkgs.stdenv.mkDerivation rec {
     pname = "grease";
     version = "0.3.0";
     src = ./library.oil;
+    dontUnpack = true;
     buildInputs = with nixpkgs; [
       inputs.cells.oil-shell.packages.oil
       ripgrep
