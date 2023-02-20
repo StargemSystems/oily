@@ -1,4 +1,4 @@
-# Slix
+# Oily
 
 A flake with the aim to replace Nix's use of Bash, in favor of the modern and compatible Oil Shell. Here you'll find integrations and utilities providing better support for using Nix and Oil together. Mainly it provides a more up to date version of oil than what's usually available in `nixpkgs-unstable`.
 

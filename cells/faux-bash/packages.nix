@@ -11,7 +11,7 @@ in {
     src = ./script.sh;
     dontUnpack = true;
     dontStrip = true;
-    passthru.shell = cell.packages.faux-bash + "/bin/bash";
+    passthru.shellPath = cell.packages.faux-bash + "/bin/bash";
     buildInputs = with nixpkgs; [ 
       inputs.cells.oil-shell.packages.oil
       bash
